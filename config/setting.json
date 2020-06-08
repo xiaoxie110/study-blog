@@ -1,0 +1,27 @@
+{
+  "config": {
+    "branch": "master",
+    "domain": "https://xiaoxie110.github.io",
+    "email": "1198886546@qq.com",
+    "platform": "github",
+    "privateKey": "",
+    "repository": "xiaoxie110.github.io",
+    "token": "9d585b1ade2fb2f201ecee76da43f1a8a535f0d2",
+    "username": "xiaoxie110"
+  },
+  "comment": {
+    "commentPlatform": "gitalk",
+    "disqusSetting": {
+      "api": "",
+      "apikey": "",
+      "shortname": ""
+    },
+    "gitalkSetting": {
+      "clientId": "",
+      "clientSecret": "",
+      "owner": "",
+      "repository": ""
+    },
+    "showComment": false
+  }
+}
