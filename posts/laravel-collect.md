@@ -340,4 +340,97 @@ contains 方法用 “松散” 比较检查元素值，用 containsStrict 方�
 >>> collect([[ 'a'=>1,'b'=>2],['a'=>3,'b'=>2]])->map(function($item, $key){ return $item['a'] * 2;})->all();
 => [2,6]
 ```
+
+#### mapToDictionary()
+#### mapWithKeys() 
+>遍历集合并将每个值传入给定的回调函数。将返回一个包含单个键 / 值对的关联数组
+```PHP
+>>> collect([[ 'a'=>1,'b'=>2],['a'=>3,'b'=>4]])->mapWithKeys(function($item){return [$item['a'] => $item['b']];})->all()
+=> [
+     1 => 2,
+     3 => 4,
+   ]
+```
+
+#### merge() 
+>方法将合并指定的数组或集合到原集合，如果给定的集合项的字符串键与原集合中的字符串键相匹配，则指定集合项的值将覆盖原集合的值 array_merge
+```PHP
+// 一般使用
+>>> collect([ 'a'=>1,'b'=>2])->merge(['c' => 5])->all();
+=> [
+     "a" => 1,
+     "b" => 2,
+     "c" => 5,
+   ]
+// 有覆盖
+>>> collect([ 'a'=>1,'b'=>2])->merge(['a' => 5])->all();
+=> [
+     "a" => 5,
+     "b" => 2,
+   ]
+```
+#### mergeRecursive()
+> 以递归的形式合并给定的数组或集合到原集合中 array_merge_recursive
+```PHP
+// 同一个键值的合并
+>>> collect(['a'=>1,'b'=>2])->mergeRecursive(['a' => 5])->all();
+=> ["a" => [1,5,"b" => 2]
+>>> collect([ 'a'=>['c'=>1],'b'=>2])->mergeRecursive(['a' => 5])->all();
+=> ["a" => ["c" => 1,0 => 5,],"b" => 2,]
+```
+
+#### combine()
+> 将一个集合的值作为键，与另一个数组或集合的值进行结合 array_combine
+```PHP
+// 一般使用
+>>> collect(['a', 'b'])->combine([1,2])->all()
+=> [
+     "a" => 1,
+     "b" => 2,
+   ]
+// 只能传递相等数量的集合
+>>> collect(['a', 'b'])->combine([1,2,3])->all()
+PHP Warning:  array_combine(): Both parameters should have an equal number of elements in D:/dev/study/laravel/vendor/laravel/framework/src/Illuminate/Support/Collection.php on line 777
+=> [
+     false,
+   ]
+```
+
+#### union()
+> 方法将给定数组添加到集合中。如果给定的数组含有与原集合一样的键，则首选原始集合的值,这点和merge相反
+```PHP
+>>> collect(['a'=>1, 'b'=>2])->union(['a'=>3,'d'=>4])->all()
+=> [
+     "a" => 1,
+     "b" => 2,
+     "d" => 4,
+   ]
+>>> collect(['a'=>1, 'b'=>2])->merge(['a'=>3,'d'=>4])->all()
+=> [
+     "a" => 3,
+     "b" => 2,
+     "d" => 4,
+   ]
+
+```
+
+#### nth()
+
+#### only()
+> 返回集合中所有指定键的集合项
+```PHP
+>>> collect(['a'=>1, 'b'=>2])->only('a')->all()
+=> [
+     "a" => 1,
+   ]
+```
+
+#### pop()
+#### prepend()
+
+
+
+
+
+
   [1]: https://github.com/xiaoxie110/laravel/blob/master/vendor/laravel/framework/src/Illuminate/Support/Collection.php
