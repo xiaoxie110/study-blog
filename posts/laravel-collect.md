@@ -7,6 +7,7 @@ hideInList: false
 feature: 
 isTop: false
 ---
+
 > 集合（Collection）Illuminate\Support\Collection 类了提供一个便捷的操作数组的封装。[Collection.php源码解读][1]
 
 [TOC]
@@ -427,7 +428,181 @@ PHP Warning:  array_combine(): Both parameters should have an equal number of el
 
 #### pop()
 #### prepend()
+> prepend($value, $key = null) 将指定的值添加的集合的开头
+```PHP
+// 添加指定值到集合的开头
+>>> collect(['a'=>1,'b'=>2])->prepend('c')->all()
+=> [
+     0 => "c",
+     "a" => 1,
+     "b" => 2,
+   ]
+// 指定新增集合项的键   
+>>> collect(['a'=>1,'b'=>2])->prepend('c',1)->all()
+=> [
+     1 => "c",
+     "a" => 1,
+     "b" => 2,
+   ]
+```
+#### push()
+> push($value) 添加一个值于集合末尾,只能插入一个值
+```PHP
+>>> collect(['a','b'])->push('c','d')->all()
+=> ["a", "b", "c"]
+>>> collect([1, 2, 3])->push(4, 5)->all();
+=> [1, 2, 3, 4]
+```
+#### concat()
+> 在集合的末端附加指定的数组或者集合
+```PHP
+>>> collect([1, 2, 3])->concat([4, 5])->all();
+=> [1, 2, 3, 4, 5]
+```
 
+#### pull()
+> pull($key, $default = null) 指定键对应的值从集合中移除并返回,default为默认值
+```PHP
+>>> collect(['a'=>1,'b'=>2])->pull('a',0)
+=> 1
+>>> collect(['a'=>1,'b'=>2])->pull('c',3)
+=> 3
+```
+
+#### put()
+> put($key, $value) 设定集合内指定键的值，如果不存在，则新增到末尾
+```PHP
+>>> collect(['a'=>1,'b'=>2])->put('c',3)->all()
+=> [
+     "a" => 1,
+     "b" => 2,
+     "c" => 3,
+   ]
+>>> collect(['a'=>1,'b'=>2])->put('a',3)->all()
+=> [
+     "a" => 3,
+     "b" => 2,
+   ]
+```
+
+#### random
+> random($number = null) 集合中返回一个随机项,$number不能大于集合的数量，否则报错
+```PHP
+// 默认返回一个
+>>> collect(['a'=>1,'b'=>2])->random()
+=> 2
+>>> collect(['a'=>1,'b'=>2])->random(2)->all()
+=> [
+     1,
+     2,
+   ]
+// 大于集合数量，报错   
+>>> collect(['a'=>1,'b'=>2])->random(3)->all()
+InvalidArgumentException with message 'You requested 3 items, but there are only 2 items available.'
+```
+
+#### reduce
+> reduce(callable $callback, $initial = null) 将每次迭代的结果传递给下一次迭代，直到遍历完集合
+```PHP
+// 循环迭代 返回res
+>>> collect([1, 2, 3])->reduce(function($res,$val){ return $res+$val;});
+=> 6
+// res初始值
+>>> collect([1, 2, 3])->reduce(function($res,$val){ return $res+$val;},10);
+=> 16
+```
+
+#### replace
+> replace 方法类似于 merge，不仅可以覆盖匹配到的相同字符串键的集合项，而且也可以覆盖数字键的集合
+```PHP
+>>> collect(['a'=>1,'b'=>2])->replace(['b'=>10])->all();
+=> [
+     "a" => 1,
+     "b" => 10,
+   ]
+>>> collect([1, 2, 3])->replace([1=>10])->all();
+=> [1, 10, 3]
+```
+
+#### replaceRecursive()
+
+#### reverse()
+
+#### search()
+>search($value, $strict = false) 集合的搜寻方法，搜索给定的值,返回键值
+```PHP
+// 搜寻指定的值
+>>> collect(['a'=>1,'b'=>2])->search('a');
+=> false
+>>> collect(['a'=>1,'b'=>2])->search('1');
+=> "a"
+// 指定严格模式
+>>> collect(['a'=>1,'b'=>2])->search('1',true);
+=> false
+// 指定回调函数
+>>> collect(['a'=>1,'b'=>2])->search(function($item,$key){return $item > 1;});
+=> "b"
+```
+
+#### shift()
+#### shuffle()
+#### skip()
+#### slice()
+> slice($offset, $length = null) 返回集合中给定索引开始后面的部分： array_slice()
+```PHP
+>>> collect([1, 2, 3, 4, 5, 6, 7])->slice(3)->all()
+=> [
+     3 => 4,
+     4 => 5,
+     5 => 6,
+     6 => 7,
+   ]
+>>> collect([1, 2, 3, 4, 5, 6, 7])->slice(2,2)->all()
+=> [
+     2 => 3,
+     3 => 4,
+   ]
+```
+
+#### split()
+#### chunk()
+> chunk($size) 集合分割成多个指定大小的较小集合
+#### sort()
+#### sortDesc()
+#### sortBy()
+#### sortByDesc()
+#### sortKeys()
+#### sortKeysDesc()
+#### splice()
+#### take()
+#### takeUntil()
+#### takeWhile()
+#### transform()
+> transform(callable $callback) 方法会遍历整个集合，并对集合中的每项都会调用其回调函数,和map原理一致，但是该方法会改变原有集合
+```PHP
+// map不会改变原集合的值
+>>> $a = collect([1,2,3,4,5]);
+>>> $a->map(function($item,$key){return $item*2;})
+>>> $a->all();
+=> [1,2,3,4,5,]
+// transform改变原集合
+>>> $a->transform(function($item,$key){return $item*2;})
+>>> $a->all();
+=> [2,4,6,8,10,]
+>>>
+```
+#### values()
+#### zip()
+#### pad()
+#### getIterator()
+#### count()
+#### add()
+#### toBase()
+> 基于当前集合返回一个新的集合
+#### offsetExists()
+#### offsetGet()
+#### offsetSet()
+#### offsetUnset()
 
 
 
