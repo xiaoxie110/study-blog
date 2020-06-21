@@ -303,5 +303,62 @@ interface Store
     public function getPrefix();
 }
 ```
+
+#### 控制反转
+> cache缓存使用了依赖注入，不反转的例子 Cache类依赖Redis, 每次使用缓存的时候我们都要new Redis()
+```PHP
+class Cache {
+    public function __construct()
+    {
+        $this->store = new Redis();
+    }
+}
+```
+> 反转使用容器, 由容器实例化对应的类，把控制权给了容器, 每个使用缓存的地方， 引入的都是容器， 使用make解析出 缓存对象
+```PHP
+class Cache {
+    public function __construct(Container $container)
+    {
+        $this->$container = $container;
+
+        $this->store = $this->container->make('cache');
+    }
+}
+```
+> 类似这样，绑定一个redis对象，使用的时候直接make()解析即可
+```PHP
+$this->app->singleton('cache', function ($app) {
+    return new Redis($app);
+});
+```
+>如果不想用redis缓存了，不使用反转的时候，需要去每个使用缓存的类中修改，使用控制转只需要在绑定的时候修改即可，当然实际的应用中，我们也不必去修改绑定，我们可以类似的通过配置来实现快速切换，类似于工厂模式注入
+```PHP
+//CacheManager类中可以通过读取配置getConfig()
+$this->app->singleton('cache', function ($app) {
+    return new CacheManager($app);
+});
+//CacheManager直接解析为对应的缓存方法
+protected function resolve($name)
+    {
+        $config = $this->getConfig($name);
+
+        if (is_null($config)) {
+            throw new InvalidArgumentException("Cache store [{$name}] is not defined.");
+        }
+
+        if (isset($this->customCreators[$config['driver']])) {
+            return $this->callCustomCreator($config);
+        } else {
+            $driverMethod = 'create'.ucfirst($config['driver']).'Driver';
+
+            if (method_exists($this, $driverMethod)) {
+                return $this->{$driverMethod}($config);
+            } else {
+                throw new InvalidArgumentException("Driver [{$config['driver']}] is not supported.");
+            }
+        }
+    }
+```
+
   [1]: https://github.com/xiaoxie110/laravel/blob/master/vendor/laravel/framework/src/Illuminate/Cache/Repository.php
   [2]: https://github.com/xiaoxie110/laravel/blob/master/vendor/laravel/framework/src/Illuminate/Cache/CacheManager.php
